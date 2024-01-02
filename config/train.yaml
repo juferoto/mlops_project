@@ -1,0 +1,7 @@
+path: .
+train: images/train
+val: images/validation
+
+# Clases
+names:
+  0: plaga

@@ -4,10 +4,15 @@ from sklearn.metrics import ConfusionMatrixDisplay, accuracy_score, precision_sc
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix
 
+import mlflow
+import mlflow.sklearn
+from mlflow.models.signature import infer_signature
+
 def run_training(pipeline, num_evaluaciones, tamano_sampling, tamano_pruebas):
     matrices_confusion = []
 
     data_sin_plagas, labels_sin_plagas, data_plagas, labels_plagas = pipeline.named_steps['normalize'].image_normalize()
+    data_total_size = len(data_sin_plagas) + len(data_plagas)
 
     # Repetir el proceso de entrenamiento y evaluación n veces (10 por defecto)
     for _ in range(num_evaluaciones):
@@ -31,12 +36,27 @@ def run_training(pipeline, num_evaluaciones, tamano_sampling, tamano_pruebas):
             random_state=42
         )
 
+        x_train_size = len(x_train)
+        x_test_size = len(x_train)
+
         # Entrenar el modelo y obtener las métricas
         pipeline.fit(x_train, y_train)
         y_pred = pipeline.predict(x_test)
 
+        # signature = infer_signature(x_train, y_train)
         # Calcular métricas adicionales
         matrices_confusion.append(confusion_matrix(y_test, y_pred))
+    mlflow.log_params({
+        'dataset_size': data_total_size,
+        'training_set_size': x_train_size,
+        'test_set_size': x_test_size
+    })
+
+    mlflow.sklearn.log_model(
+        sk_model=pipeline,
+        artifact_path="regressions-model",
+        registered_model_name="RegressionModel"
+    )
     return matrices_confusion
 
 def get_metrics(matrices_confusion):
@@ -51,8 +71,11 @@ def get_metrics(matrices_confusion):
     accuracy = (matrices_confusion_promedio[0, 0] + matrices_confusion_promedio[1, 1]) / np.sum(matrices_confusion_promedio)
     precision = matrices_confusion_promedio[1, 1] / (matrices_confusion_promedio[1, 1] + matrices_confusion_promedio[0, 1])
 
-    return {
+    metrics = {
         'accuracy': accuracy,
         'precision': precision,
         'recall': recall
     }
+
+    mlflow.log_metrics(metrics)
+    return metrics

@@ -4,6 +4,8 @@ import joblib
 
 from pipeline import create_pipeline
 from train_pipeline import get_metrics, run_training
+import mlflow
+import mlflow.sklearn
 
 # if __name__ == "__main__":
 #     parser = argparse.ArgumentParser(description="Ejecutar el programa con parámetros.")
@@ -26,16 +28,21 @@ def show_results():
     tamano_sampling = 50
     tamano_pruebas = 0.2
 
-    # Crea el pipeline
-    pipeline = create_pipeline(input_dir, categories)
-    matrices_confusion = run_training(
-        pipeline, num_evaluaciones, tamano_sampling, tamano_pruebas
-    )
+    mlflow.set_experiment("/mlops-project/RegresionLogistica")
+    with mlflow.start_run() as run:
 
-    joblib.dump(pipeline, "model_regression.joblib")
+        # Crea el pipeline
+        pipeline = create_pipeline(input_dir, categories)
+        matrices_confusion = run_training(
+            pipeline, num_evaluaciones, tamano_sampling, tamano_pruebas
+        )
+        model_name = "model_regression.joblib"
 
-    # Calcula las metricas apartir de todas las matrices de confusión
-    results = get_metrics(matrices_confusion)
+        joblib.dump(pipeline, model_name)
+        mlflow.log_artifact(model_name)
+
+        # Calcula las metricas apartir de todas las matrices de confusión
+        results = get_metrics(matrices_confusion)
 
     # Calcular y mostrar las métricas finales
     print(f'Accuracy Final: {results["accuracy"] * 100}')
