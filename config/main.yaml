@@ -1,0 +1,23 @@
+defaults:
+  - model: model1
+  - _self_
+
+raw: 
+  path: data/raw
+  types: [sin_plaga, plaga]
+
+final:
+  dir: data/final
+  name: train
+  path: ${final.dir}/${final.name}
+
+model:
+  dir: models
+  name: model_regression
+  path: ${model.dir}/${model.name}.joblib
+  
+mlflow:
+    tracking_ui: file:\D:\proyectoGrado\mlops_project\mlruns\
+    username: juferoto
+    password: cf82c40f8b92dc68201f69fbc923bb4129d215c5
+    experiment_name: /mlops-project/RegresionLogistica

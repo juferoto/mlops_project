@@ -3,7 +3,6 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix
 
-# import mlflow
 from helper import BaseLogger
 
 logger = BaseLogger()
@@ -18,11 +17,11 @@ def log_params(model: object, features: dict):
     logger.log_params({"features": features})
 
 
-def log_metrics(**metrics: dict):
+def log_metrics(metrics: dict):
     logger.log_metrics(metrics)
 
 def run_training(pipeline, num_evaluaciones, tamano_sampling, tamano_pruebas):
-    matrices_confusion = []
+    confusion_matrixs = []
 
     data_sin_plagas, labels_sin_plagas, data_plagas, labels_plagas = pipeline.named_steps['normalize'].image_normalize()
     data_total_size = len(data_sin_plagas) + len(data_plagas)
@@ -57,25 +56,14 @@ def run_training(pipeline, num_evaluaciones, tamano_sampling, tamano_pruebas):
         y_pred = pipeline.predict(x_test)
 
         # Calcular métricas adicionales
-        matrices_confusion.append(confusion_matrix(y_test, y_pred))
+        confusion_matrixs.append(confusion_matrix(y_test, y_pred))
     params = {
         'dataset_size': data_total_size,
         'training_set_size': x_train_size,
         'test_set_size': x_test_size
     }
-    # mlflow.log_params({
-    #     'dataset_size': data_total_size,
-    #     'training_set_size': x_train_size,
-    #     'test_set_size': x_test_size
-    # })
-
-    # mlflow.sklearn.log_model(
-    #     sk_model=pipeline,
-    #     artifact_path="regressions-model",
-    #     registered_model_name="RegressionModel"
-    # )
     log_params(pipeline, params)
-    return matrices_confusion
+    return confusion_matrixs
 
 def get_metrics(matrices_confusion):
     matrices_confusion_promedio = np.mean(matrices_confusion, axis=0)
@@ -90,6 +78,5 @@ def get_metrics(matrices_confusion):
         'recall': recall
     }
 
-    # mlflow.log_metrics(metrics)
     log_metrics(metrics)
     return metrics
