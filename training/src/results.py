@@ -1,45 +1,34 @@
-import argparse
-
+import hydra
 import joblib
+from omegaconf import DictConfig
 
 from pipeline import create_pipeline
 from train_pipeline import get_metrics, run_training
 import mlflow
 import mlflow.sklearn
 
-# if __name__ == "__main__":
-#     parser = argparse.ArgumentParser(description="Ejecutar el programa con parámetros.")
-#     parser.add_argument("--input_dir", type=str, help="Directorio de entrada de imágenes.")
-#     parser.add_argument("--categories", type=str, help="Categorías separadas por coma.")
-#     parser.add_argument("--num_evaluaciones", type=int, help="Número de evaluaciones.")
-#     parser.add_argument("--tamano_sampling", type=int, help="Tamaño de muestreo.")
-#     parser.add_argument("--tamano_pruebas", type=float, help="Tamaño de pruebas.")
+@hydra.main(version_base=None, config_path="../../config", config_name="main")
+def show_results(config: DictConfig):
+    input_dir = config.raw.path
+    categories = config.raw.types
+    evaluations_number = config.model.evaluations_number
+    sampling_size = config.model.sampling_size
+    test_size = config.model.test_size
 
-#     args = parser.parse_args()
-#     categories = args.categories.split(",") if args.categories else []
-#     show_results(args.input_dir, categories, args.num_evaluaciones, args.tamano_sampling, args.tamano_pruebas)
-
-
-# def show_results(input_dir="D:\proyectoGrado\DatosAguacate", categories=['sin_plaga', 'plaga'], num_evaluaciones=10, tamano_sampling=50, tamano_pruebas=0.2):
-def show_results():
-    input_dir = "D:\proyectoGrado\DatosAguacate"
-    categories = ["sin_plaga", "plaga"]
-    num_evaluaciones = 10
-    tamano_sampling = 50
-    tamano_pruebas = 0.2
-
-    mlflow.set_experiment("/mlops-project/RegresionLogistica")
+    # Indica la url en donde esta el entorno de MLFlow local o remoto
+    mlflow.set_tracking_uri(config.mlflow_tracking_ui)
+    mlflow.set_experiment(config.mlflow_experiment_name)
     with mlflow.start_run() as run:
 
         # Crea el pipeline
         pipeline = create_pipeline(input_dir, categories)
         matrices_confusion = run_training(
-            pipeline, num_evaluaciones, tamano_sampling, tamano_pruebas
+            pipeline, evaluations_number, sampling_size, test_size
         )
         model_name = "model_regression.joblib"
 
         joblib.dump(pipeline, model_name)
-        mlflow.log_artifact(model_name)
+        # mlflow.log_artifact(model_name)
 
         # Calcula las metricas apartir de todas las matrices de confusión
         results = get_metrics(matrices_confusion)

@@ -1,12 +1,25 @@
 from matplotlib import pyplot as plt
 import numpy as np
-from sklearn.metrics import ConfusionMatrixDisplay, accuracy_score, precision_score, recall_score
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix
 
-import mlflow
-import mlflow.sklearn
-from mlflow.models.signature import infer_signature
+# import mlflow
+from helper import BaseLogger
+
+logger = BaseLogger()
+
+def log_params(model: object, features: dict):
+    logger.log_params({"model_class": type(model).__name__})
+    model_params = model.get_params()
+
+    for arg, value in model_params.items():
+        logger.log_params({arg: value})
+
+    logger.log_params({"features": features})
+
+
+def log_metrics(**metrics: dict):
+    logger.log_metrics(metrics)
 
 def run_training(pipeline, num_evaluaciones, tamano_sampling, tamano_pruebas):
     matrices_confusion = []
@@ -43,29 +56,29 @@ def run_training(pipeline, num_evaluaciones, tamano_sampling, tamano_pruebas):
         pipeline.fit(x_train, y_train)
         y_pred = pipeline.predict(x_test)
 
-        # signature = infer_signature(x_train, y_train)
         # Calcular métricas adicionales
         matrices_confusion.append(confusion_matrix(y_test, y_pred))
-    mlflow.log_params({
+    params = {
         'dataset_size': data_total_size,
         'training_set_size': x_train_size,
         'test_set_size': x_test_size
-    })
+    }
+    # mlflow.log_params({
+    #     'dataset_size': data_total_size,
+    #     'training_set_size': x_train_size,
+    #     'test_set_size': x_test_size
+    # })
 
-    mlflow.sklearn.log_model(
-        sk_model=pipeline,
-        artifact_path="regressions-model",
-        registered_model_name="RegressionModel"
-    )
+    # mlflow.sklearn.log_model(
+    #     sk_model=pipeline,
+    #     artifact_path="regressions-model",
+    #     registered_model_name="RegressionModel"
+    # )
+    log_params(pipeline, params)
     return matrices_confusion
 
 def get_metrics(matrices_confusion):
     matrices_confusion_promedio = np.mean(matrices_confusion, axis=0)
-
-    # disp = ConfusionMatrixDisplay(confusion_matrix=matrices_confusion_promedio, display_labels=['sin_plaga', 'plaga'])
-    # disp.plot(cmap='Blues', values_format='.2f')
-    # plt.title('Matriz de Confusión Promedio')
-    # plt.show()
 
     recall = matrices_confusion_promedio[1, 1] / (matrices_confusion_promedio[1, 1] + matrices_confusion_promedio[1, 0])
     accuracy = (matrices_confusion_promedio[0, 0] + matrices_confusion_promedio[1, 1]) / np.sum(matrices_confusion_promedio)
@@ -77,5 +90,6 @@ def get_metrics(matrices_confusion):
         'recall': recall
     }
 
-    mlflow.log_metrics(metrics)
+    # mlflow.log_metrics(metrics)
+    log_metrics(metrics)
     return metrics
