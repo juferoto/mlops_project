@@ -1,5 +1,5 @@
 __pycache__/
 mlruns/
 outputs/
-/data
-/models
+data/
+models/

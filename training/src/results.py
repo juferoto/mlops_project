@@ -5,17 +5,16 @@ import mlflow
 import mlflow.sklearn
 
 from omegaconf import DictConfig
+from sklearn.linear_model import LogisticRegression
 
-from hydra.utils import to_absolute_path as abspath
-from pipeline import create_pipeline
-from train_pipeline import get_metrics, run_training
+from train_model import get_metrics, run_training
 from helper import BaseLogger
+from preprocessors import ImageTransformation
 
 logger = BaseLogger()
 
-
-@hydra.main(version_base=None, config_path="../../config", config_name="main")
-def show_results(config: DictConfig):
+""" Aqui se agregan todas las funciones necesarias para evaluar un modelo """
+def execute_model(config: DictConfig):
     input_dir = config.raw.path
     categories = config.raw.types
     evaluations_number = config.model.evaluations_number
@@ -24,30 +23,30 @@ def show_results(config: DictConfig):
 
     # Indica la url en donde esta el entorno de MLFlow local o remoto
     mlflow.set_tracking_uri(config.mlflow.tracking_ui)
-    mlflow.set_experiment(config.mlflow.experiment_name)
-    # os.environ['MLFLOW_TRACKING_USERNAME'] = config.mlflow.username
-    # os.environ['MLFLOW_TRACKING_PASSWORD'] = config.mlflow.password
+    os.environ['MLFLOW_TRACKING_USERNAME'] = config.mlflow.username
+    os.environ['MLFLOW_TRACKING_PASSWORD'] = config.mlflow.password
     with mlflow.start_run() as run:
 
-        # Crea el pipeline
-        pipeline = create_pipeline(input_dir, categories)
+        # Se obtiene el modelo a usar
+        model = LogisticRegression()
+
+        # Se realiza el pre-procesamiento de los datos
+        image_normalizer = ImageTransformation(input_dir, categories)
+
+        # Se entrena el modelo
         confusion_matrix = run_training(
-            pipeline, evaluations_number, sampling_size, test_size
+            model, image_normalizer, evaluations_number, sampling_size, test_size
         )
         model_path = config.model.path
 
-        joblib.dump(pipeline, model_path)
-        logger.log_model(pipeline, config.model.name)
-        # mlflow.log_artifact(model_name)
+        # Se guarda el modelo
+        joblib.dump(model, model_path)
+        logger.log_model(model, config.model.artifact_path, config.model.name)
 
-        # Calcula las metricas apartir de todas las matrices de confusión
+        # Se obtienen las metricas
         results = get_metrics(confusion_matrix)
 
-    # Calcular y mostrar las métricas finales
+    # Muestra los resultados despues de haber entrenado y validado el modelo
     print(f'Accuracy Final: {results["accuracy"] * 100}')
     print(f'Precision Final: {results["precision"] * 100}')
     print(f'Recall Final: {results["recall"] * 100}')
-
-
-if __name__ == "__main__":
-    show_results()

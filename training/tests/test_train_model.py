@@ -7,7 +7,7 @@ from hydra.utils import to_absolute_path as abspath
 from sklearn.metrics import accuracy_score, precision_score, recall_score
 from sklearn.model_selection import train_test_split
 
-
+""" Aqui se agregan todas las funciones necesarias para realizar pruebas sobre un modelo ML """
 def test_logistic_regression():
 
     with initialize(version_base=None, config_path="../../config"):
