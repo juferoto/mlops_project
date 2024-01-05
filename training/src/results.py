@@ -14,6 +14,7 @@ from preprocessors import ImageTransformation
 logger = BaseLogger()
 
 """ Aqui se agregan todas las funciones necesarias para evaluar un modelo """
+@hydra.main(version_base=None, config_path="../../config", config_name="main")
 def execute_model(config: DictConfig):
     input_dir = config.raw.path
     categories = config.raw.types
@@ -50,3 +51,6 @@ def execute_model(config: DictConfig):
     print(f'Accuracy Final: {results["accuracy"] * 100}')
     print(f'Precision Final: {results["precision"] * 100}')
     print(f'Recall Final: {results["recall"] * 100}')
+
+if __name__ == "__main__":
+    execute_model()

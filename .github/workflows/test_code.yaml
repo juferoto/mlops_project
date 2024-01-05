@@ -1,0 +1,42 @@
+name: Probar codigo y aplicacion
+on:
+  pull_request:
+    paths:
+      - config/**
+      - training/**
+      - application/**
+      - .github/workflows/test_code.yaml
+jobs:
+  test_model:
+    name: Probar modelo y aplicación en local
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 
+        id: checkout
+        uses: actions/checkout@v3
+
+      - name: Configuracion del ambiente
+        uses: actions/setup-python@v3
+        with:
+          python-version: 3.11
+          cache: pip
+        
+      - name: Instalar paquetes necesarios
+        run: pip install -r dev-requirements.txt
+
+      - name: Obtener los datos
+        run: |
+          dvc remote modify origin --local auth basic
+          dvc remote modify origin --local user ${{ secrets.DAGSHUB_USERNAME }}
+          dvc remote modify origin --local password ${{ secrets.DAGSHUB_TOKEN }}
+          dvc pull -r origin train_model
+
+      - name: Probar modelo ML automaticamente
+        run: pytest training/tests
+
+      - name: Desplegar la aplicación localmente y correr pruebas sobre ella
+        run: |
+          python application/src/create_service.py & 
+          sleep 10
+          pytest application/tests
+          kill -9 `lsof -i:3000 -t`
