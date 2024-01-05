@@ -1,43 +1,48 @@
-from matplotlib import pyplot as plt
+import csv
+import os
+import hydra
+import joblib
 import numpy as np
-from sklearn.model_selection import train_test_split
+from omegaconf import DictConfig
+from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import confusion_matrix
+from sklearn.model_selection import train_test_split
 
-from helper import BaseLogger
-
-logger = BaseLogger()
+from preprocessors import ImageTransformation
 
 """ Aqui se agregan todas las funciones necesarias para entrenar un modelo """
-def log_params(model: object, features: dict):
-    logger.log_params({"model_class": type(model).__name__})
-    model_params = model.get_params()
+@hydra.main(version_base=None, config_path="../../config", config_name="main")
+def train(config: DictConfig):
 
-    for arg, value in model_params.items():
-        logger.log_params({arg: value})
+    input_dir = config.raw.path
+    categories = config.raw.types
+    evaluation_number = config.model.evaluations_number
+    sampling_size = config.model.sampling_size
+    test_size = config.model.test_size
 
-    logger.log_params({"features": features})
-
-
-def log_metrics(metrics: dict):
-    logger.log_metrics(metrics)
-
-def run_training(model, image_normalizer, num_evaluaciones, tamano_sampling, tamano_pruebas):
     confusion_matrixs = []
 
+    # Se obtiene el modelo a usar
+    model = LogisticRegression()
 
+    # Se obtiene la clase para el pre-procesamiento de los datos (pueden ser funciones)
+    image_normalizer = ImageTransformation(input_dir, categories)
+
+    # Se realiza la normalizacion de las imagenes
     data_sin_plagas, labels_sin_plagas, data_plagas, labels_plagas = image_normalizer.image_normalize()
     data_total_size = len(data_sin_plagas) + len(data_plagas)
 
+
     # Repetir el proceso de entrenamiento y evaluación n veces (10 por defecto)
-    for _ in range(num_evaluaciones):
+    for _ in range(evaluation_number):
 
         # Realizar subsampling en la clase mayoritaria
-        indices_resample = np.random.choice(len(data_plagas), size=tamano_sampling, replace=True)
+        indices_resample = np.random.choice(len(data_plagas), size=sampling_size, replace=True)
         
         data_plagas_resample = np.asarray(data_plagas)[indices_resample]
         labels_plagas_resample = np.asarray(labels_plagas)[indices_resample]
 
-        # Combinar datos de 'sin_plaga' y datos resampleados de 'plaga'
+        # Combinar datos de 'sin_plaga' y datos subsampling de 'plaga'
         data_resample = np.concatenate([data_sin_plagas, data_plagas_resample])
         labels_resample = np.concatenate([labels_sin_plagas, labels_plagas_resample])
 
@@ -45,7 +50,7 @@ def run_training(model, image_normalizer, num_evaluaciones, tamano_sampling, tam
         x_train, x_test, y_train, y_test = train_test_split(
             data_resample,
             labels_resample,
-            test_size=tamano_pruebas,
+            test_size=test_size,
             shuffle=True,
             random_state=42
         )
@@ -53,32 +58,23 @@ def run_training(model, image_normalizer, num_evaluaciones, tamano_sampling, tam
         x_train_size = len(x_train)
         x_test_size = len(x_train)
 
-        # Entrenar el modelo y obtener las métricas
+        # Entrena el modelo
         model.fit(x_train, y_train)
         y_pred = model.predict(x_test)
 
         # Calcular métricas adicionales
         confusion_matrixs.append(confusion_matrix(y_test, y_pred))
-    params = {
-        'dataset_size': data_total_size,
-        'training_set_size': x_train_size,
-        'test_set_size': x_test_size
-    }
-    log_params(model, params)
-    return confusion_matrixs
+        params = {
+            'dataset_size': data_total_size,
+            'training_set_size': x_train_size,
+            'test_set_size': x_test_size
+        }
+    
+    # Se guarda el modelo
+    model_path = config.model.path
+    joblib.dump(model, model_path)
+    
+    return confusion_matrixs, model, params
 
-def get_metrics(matrices_confusion):
-    matrices_confusion_promedio = np.mean(matrices_confusion, axis=0)
-
-    recall = matrices_confusion_promedio[1, 1] / (matrices_confusion_promedio[1, 1] + matrices_confusion_promedio[1, 0])
-    accuracy = (matrices_confusion_promedio[0, 0] + matrices_confusion_promedio[1, 1]) / np.sum(matrices_confusion_promedio)
-    precision = matrices_confusion_promedio[1, 1] / (matrices_confusion_promedio[1, 1] + matrices_confusion_promedio[0, 1])
-
-    metrics = {
-        'accuracy': accuracy,
-        'precision': precision,
-        'recall': recall
-    }
-
-    log_metrics(metrics)
-    return metrics
+if __name__ == "__main__":
+    train()

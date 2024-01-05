@@ -5,6 +5,3 @@ stages:
     - config/main.yaml
     - data/raw
     - training/src/train_model.py
-    outs:
-    - models/model_regression:
-        persist: true
