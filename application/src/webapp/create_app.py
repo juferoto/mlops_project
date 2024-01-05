@@ -18,7 +18,7 @@ def write_predictions(data: object):
     if data is not None:
         # "https://employee-predict-1.herokuapp.com/predict"
         # Colocar la ruta en donde esta alojada la aplicacion local o remota
-        API_URL = "http://127.0.0.1:8000/predict"
+        API_URL = "https://api-predict-plague-4cf69041c262.herokuapp.com/predict"
 
         # Cargar imagen a validar (Opcional)
         image = Image.open(data)

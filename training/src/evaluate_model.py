@@ -39,6 +39,7 @@ def evaluate(config: DictConfig):
         log_params(model, params)
         logger.log_model(model, config.model.artifact_path, config.model.name)
         logger.log_metrics(metrics)
+        logger.log_artifact(config.model.path)
 
     # Muestra los resultados despues de haber entrenado y validado el modelo
     print(f'Accuracy Final: {metrics["accuracy"] * 100}')

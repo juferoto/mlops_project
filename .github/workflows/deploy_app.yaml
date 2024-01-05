@@ -13,12 +13,10 @@ jobs:
     name: Desplegar la aplicacion
     runs-on: ubuntu-latest
     env:
-      PROJECT_ID: dataavocado # TODO: actualizar con project id de Google Cloud update Google Cloud project id
-      GAR_LOCATION: us-central1 # TODO: actualizar la localizacion del Artifact Registry
-      SERVICE: predictplague # TODO: actualizar con el nombre del servicio de Cloud Run
-      REGION: us-central1 # TODO: actualizar con nombre de la region del servicio de Cloud Run
+      HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+      HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
     steps:
-      - name: Checkout
+      - name: Checkout sobre el proyecto en GitHub
         id: checkout
         uses: actions/checkout@v3
 
@@ -29,38 +27,39 @@ jobs:
           cache: pip
 
       - name: Instalar paquetes necesarios
-        run: pip install -r application/src/requirements.txt
+        run: pip install -r requirements.txt
 
-      - name: Obtener los datos
+      - name: Se obtienen los datos y se validan
         run: |
           dvc remote modify origin --local auth basic
           dvc remote modify origin --local user ${{ secrets.DAGSHUB_USERNAME }}
           dvc remote modify origin --local password ${{ secrets.DAGSHUB_TOKEN }}
           dvc pull -r origin train_model
 
-      - name: Autenticación con servidor Cloud (Google)
-        id: auth
-        uses: 'google-github-actions/auth@v2'
-        with:
-          credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+      - name: Se autentica en Heroku
+        run: |
+          cat > ~/.netrc <<EOF
+            machine api.heroku.com
+              login $HEROKU_EMAIL
+              password $HEROKU_API_KEY
+            machine git.heroku.com
+              login $HEROKU_EMAIL
+              password $HEROKU_API_KEY
+          EOF
+        
+      - name: Se autentica en el manejo de contenedores de Heroku
+        run: heroku container:login
 
-      - name: Login to GAR
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.GAR_LOCATION }}-docker.pkg.dev
-          username: oauth2accesstoken
-          password: ${{ steps.auth.outputs.access_token }}
-
-      - name: Construir y subir la imagen a Google Container Registry
+      - name: Se despliega la API a Heroku
         run: |
           cd application/src
-          docker build -t "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:${{ github.sha }}" ./
-          docker push "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:${{ github.sha }}"
+          APP_NAME=api-predict-plague
+          heroku container:push web --app $APP_NAME
+          heroku container:release web --app $APP_NAME
 
-      - name: Desplegar a Google Cloud Run
-        id: deploy
-        uses: google-github-actions/deploy-cloudrun@v2
-        with:
-          service: ${{ env.SERVICE }}
-          region: ${{ env.REGION }}
-          image: ${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:${{ github.sha }}
+      - name: Se despliega la aplicacion a Heroku
+        run: |
+          cd application/src/webapp
+          WEB_NAME=web-predict-plague
+          heroku container:push web --app $WEB_NAME
+          heroku container:release web --app $WEB_NAME

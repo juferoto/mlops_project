@@ -1,0 +1,10 @@
+mlflow:
+  tracking_ui: https://dagshub.com/juferoto/mlops_project.mlflow
+  username: juferoto
+  password: cf82c40f8b92dc68201f69fbc923bb4129d215c5
+
+model:
+  dir: models/regression
+  name: model_regression
+  artifact_path: validate-plague
+  path: ${model.dir}/${model.name}.joblib

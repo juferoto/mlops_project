@@ -18,3 +18,6 @@ class BaseLogger:
         mlflow.sklearn.log_model(model, 
                                 artifact_path,
                                 registered_model_name=model_name)
+        
+    def log_artifact(self, model_name: str):
+        mlflow.log_artifact(model_name)

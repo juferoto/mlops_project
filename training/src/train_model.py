@@ -71,8 +71,7 @@ def train(config: DictConfig):
         }
     
     # Se guarda el modelo
-    model_path = config.model.path
-    joblib.dump(model, model_path)
+    joblib.dump(model, config.model.path)
     
     return confusion_matrixs, model, params
 
