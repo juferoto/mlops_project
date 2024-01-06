@@ -1,10 +1,11 @@
 from io import BytesIO
+import os
 
 import requests
 import streamlit as st
 from PIL import Image
 
-""" En este metodo agregar todos los entradas que va a tener la aplicacion (texto o imagenes) """
+# En este metodo agregar todos los entradas que va a tener la aplicacion (texto o imagenes)
 def get_inputs():
     st.title("Predecir plaga")
 
@@ -13,12 +14,11 @@ def get_inputs():
     )
     return data
 
-""" En este metodo realizar la peticion en donde esta alojada el API del modelo ML """
+# En este metodo realizar la peticion en donde esta alojada el API del modelo ML
 def write_predictions(data: object):
     if data is not None:
-        # "https://employee-predict-1.herokuapp.com/predict"
         # Colocar la ruta en donde esta alojada la aplicacion local o remota
-        API_URL = "https://api-predict-plague-4cf69041c262.herokuapp.com/predict"
+        API_URL = f'{os.getenv("PLAGUE_API")}/predict'
 
         # Cargar imagen a validar (Opcional)
         image = Image.open(data)
