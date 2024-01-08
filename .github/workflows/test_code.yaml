@@ -1,4 +1,4 @@
-name: Probar codigo y aplicacion
+name: Probar modelo y aplicación en local
 on:
   pull_request:
     paths:
@@ -15,7 +15,7 @@ jobs:
         id: checkout
         uses: actions/checkout@v3
 
-      - name: Configuracion del ambiente
+      - name: Configuración del ambiente
         uses: actions/setup-python@v3
         with:
           python-version: 3.11
@@ -31,7 +31,7 @@ jobs:
           dvc remote modify origin --local password ${{ secrets.DAGSHUB_TOKEN }}
           dvc pull -r origin train_model
 
-      - name: Probar modelo ML automaticamente
+      - name: Probar modelo ML automáticamente
         run: pytest training/tests
 
       - name: Desplegar la aplicación localmente y correr pruebas sobre ella
