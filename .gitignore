@@ -1,5 +1,6 @@
 __pycache__/
 mlruns/
-outputs/
-data/
-models/
+*.png
+/data
+/outputs
+/models

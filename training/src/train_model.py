@@ -18,7 +18,7 @@ def train(config: DictConfig):
     categories = config.raw.types
     evaluation_number = config.model.evaluations_number
     sampling_size = config.model.sampling_size
-    test_size = config.model.test_size
+    test_size_percentage = config.model.test_size_percentage
 
     confusion_matrixs = []
 
@@ -50,13 +50,10 @@ def train(config: DictConfig):
         x_train, x_test, y_train, y_test = train_test_split(
             data_resample,
             labels_resample,
-            test_size=test_size,
+            test_size=test_size_percentage,
             shuffle=True,
             random_state=42
         )
-
-        x_train_size = len(x_train)
-        x_test_size = len(x_train)
 
         # Entrena el modelo
         model.fit(x_train, y_train)
@@ -64,11 +61,10 @@ def train(config: DictConfig):
 
         # Calcular métricas adicionales
         confusion_matrixs.append(confusion_matrix(y_test, y_pred))
-        params = {
-            'dataset_size': data_total_size,
-            'training_set_size': x_train_size,
-            'test_set_size': x_test_size
-        }
+    params = {
+        'tamano_conjunto': data_total_size,
+        'porcentaje_pruebas': test_size_percentage
+    }
     
     # Se guarda el modelo
     joblib.dump(model, config.model.path)
