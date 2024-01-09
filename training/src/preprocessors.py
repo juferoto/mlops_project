@@ -12,10 +12,10 @@ class ImageTransformation:
         self.input_dir = input_dir
         self.categories = categories
 
-    def remove_background(self):
+    def remove_background(self, output_dir):
         for category_idx, category in enumerate(self.categories):
             for file in os.listdir(os.path.join(self.input_dir, category)):
-                output_path = os.path.join(self.input_dir,
+                output_path = os.path.join(output_dir,
                                            category,
                                            file[:-4] + ".png")
                 img_path = os.path.join(self.input_dir, category, file)
