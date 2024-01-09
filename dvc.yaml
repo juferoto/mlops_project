@@ -1,7 +1,16 @@
 stages:
+  process_data:
+    cmd: python training/src/process.py
+    deps:
+    - config/main.yaml
+    - data/raw
+    - training/src/process.py
   train_model:
     cmd: python training/src/train_model.py
     deps:
     - config/main.yaml
-    - data/raw
+    - data/processed
     - training/src/train_model.py
+    outs:
+    - models/regression:
+        persist: true
