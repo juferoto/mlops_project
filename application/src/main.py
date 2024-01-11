@@ -6,6 +6,7 @@ from hydra import compose, initialize
 import numpy as np
 from PIL import Image
 import mlflow
+import uvicorn
 
 app = FastAPI()
 
@@ -45,3 +46,6 @@ async def predict(file: UploadFile = File(...)):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)

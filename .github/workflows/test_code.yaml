@@ -22,14 +22,14 @@ jobs:
           cache: pip
         
       - name: Instalar paquetes necesarios
-        run: pip install -r dev-requirements.txt
+        run: pip install -r requirements.txt
 
       - name: Obtener los datos
         run: |
           dvc remote modify origin --local auth basic
           dvc remote modify origin --local user ${{ secrets.DAGSHUB_USERNAME }}
           dvc remote modify origin --local password ${{ secrets.DAGSHUB_TOKEN }}
-          dvc pull -r origin train_model
+          dvc pull -r origin process_data train_model
 
       - name: Probar modelo ML automáticamente
         run: pytest training/tests

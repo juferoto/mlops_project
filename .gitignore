@@ -2,5 +2,6 @@ __pycache__/
 mlruns/
 *.png
 /outputs
-/data
-/models
+/data/processsed
+/data/raw
+/models/regression

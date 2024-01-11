@@ -10,7 +10,24 @@ model:
   dir: models/regression
   name: model_regression
   artifact_path: validate-plague
+  random_state: 42
   path: ${model.dir}/${model.name}.joblib
+
+processed:
+  dir: data/processed
+  numpy: plagues_arrays
+  x_train: 
+    name: x_train.npy
+    path: ${processed.dir}/${processed.numpy}/${processed.x_train.name}
+  x_test:
+    name: x_test.npy
+    path: ${processed.dir}/${processed.numpy}/${processed.x_test.name}
+  y_train: 
+    name: y_train.npy
+    path: ${processed.dir}/${processed.numpy}/${processed.y_train.name}
+  y_test:
+    name: y_test.npy
+    path: ${processed.dir}/${processed.numpy}/${processed.y_test.name}  
   
 mlflow:
   tracking_ui: https://dagshub.com/juferoto/mlops_project.mlflow
