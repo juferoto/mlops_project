@@ -1,11 +1,40 @@
-import joblib
+import os
+import mlflow
 import numpy as np
 from hydra import compose, initialize
-from hydra.utils import to_absolute_path as abspath
 from omegaconf import DictConfig
 from sklearn.metrics import accuracy_score, precision_score, recall_score
 
 """ Aqui se agregan todas las funciones necesarias para realizar pruebas sobre un modelo ML """
+def get_model_version(modelRegisteredVersions: any, stage: str):
+    modelRegistered = next(filter(lambda obj: obj.current_stage == stage, modelRegisteredVersions), None)
+    return modelRegistered.version
+
+def get_model(config: DictConfig):
+    # Se agrega la direccion en donde esta alojado MLFlow sea remoto o local
+    mlflow.set_tracking_uri(config.mlflow.tracking_ui)
+    os.environ['MLFLOW_TRACKING_USERNAME'] = config.mlflow.username
+    os.environ['MLFLOW_TRACKING_PASSWORD'] = config.mlflow.password
+
+    # Obtiene el modelo que fue asignado al entorno de Produccion
+    stage = "Production"
+    model_uri=f"models:/{config.model.name}/{stage}"
+    model = mlflow.pyfunc.load_model(model_uri)
+
+    client = mlflow.MlflowClient()
+    model_registered = client.get_registered_model(config.model.name)
+    model_version = get_model_version(model_registered.latest_versions, stage)
+    os.environ["MODEL_NAME"] = config.model.name
+    os.environ["MODEL_VERSION"] = model_version
+
+    # Exportar las variables de entorno para GitHub Actions
+    output_line_model = f"{'MODEL_NAME'}={config.model.name}"
+    output_line_version = f"{'MODEL_VERSION'}={model_version}"
+
+    print(f"echo '{output_line_model}' >> $GITHUB_OUTPUT")
+    print(f"echo '{output_line_version}' >> $GITHUB_OUTPUT")
+    return model
+
 def load_data(path: DictConfig):
     x_train = np.load(path.x_train.path)
     x_test = np.load(path.x_test.path)
@@ -23,7 +52,7 @@ def test_logistic_regression():
     x_test = x_test.reshape(-1, x_test.shape[2])
 
     # Se obtiene el modelo entrenado
-    model = joblib.load(config.model.path)
+    model = get_model(config)
 
     # Obtener prediccion
     prediction = model.predict(x_test)
