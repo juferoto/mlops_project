@@ -5,6 +5,9 @@ stages:
     - config/main.yaml
     - data/raw
     - training/src/process.py
+    outs:
+    - data/processed:
+        persist: true
   train_model:
     cmd: python training/src/train_model.py
     deps:

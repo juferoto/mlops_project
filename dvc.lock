@@ -1,0 +1,46 @@
+schema: '2.0'
+stages:
+  process_data:
+    cmd: python training/src/process.py
+    deps:
+    - path: config/main.yaml
+      hash: md5
+      md5: 7f4c00ad760123fa1ed5996b80f7381f
+      size: 902
+    - path: data/raw
+      hash: md5
+      md5: 1d98ad7cc4c1ebd2010c2bde41be3504.dir
+      size: 62784427
+      nfiles: 20
+    - path: training/src/process.py
+      hash: md5
+      md5: dadf4d7cd508748008746ddc5838425a
+      size: 2465
+    outs:
+    - path: data/processed
+      hash: md5
+      md5: a33fcad8ab9d243ee3914a74c337b474.dir
+      size: 99649059
+      nfiles: 24
+  train_model:
+    cmd: python training/src/train_model.py
+    deps:
+    - path: config/main.yaml
+      hash: md5
+      md5: 7f4c00ad760123fa1ed5996b80f7381f
+      size: 902
+    - path: data/processed
+      hash: md5
+      md5: a33fcad8ab9d243ee3914a74c337b474.dir
+      size: 99649059
+      nfiles: 24
+    - path: training/src/train_model.py
+      hash: md5
+      md5: 5938f880368b1ef6ec9bfe630751a6df
+      size: 1229
+    outs:
+    - path: models/regression
+      hash: md5
+      md5: 4cd113e863e4f89227c6a1969d91980d.dir
+      size: 9831231
+      nfiles: 1
