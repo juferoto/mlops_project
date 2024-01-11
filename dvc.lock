@@ -9,9 +9,9 @@ stages:
       size: 902
     - path: data/raw
       hash: md5
-      md5: 1d98ad7cc4c1ebd2010c2bde41be3504.dir
-      size: 62784427
-      nfiles: 20
+      md5: 46bd1b295f398154f38c64ead80c96fd.dir
+      size: 98357517
+      nfiles: 40
     - path: training/src/process.py
       hash: md5
       md5: dadf4d7cd508748008746ddc5838425a
@@ -19,8 +19,8 @@ stages:
     outs:
     - path: data/processed
       hash: md5
-      md5: a33fcad8ab9d243ee3914a74c337b474.dir
-      size: 99649059
+      md5: ed8d2766ef61788addffb67dc0ce482f.dir
+      size: 124225139
       nfiles: 24
   train_model:
     cmd: python training/src/train_model.py
@@ -31,8 +31,8 @@ stages:
       size: 902
     - path: data/processed
       hash: md5
-      md5: a33fcad8ab9d243ee3914a74c337b474.dir
-      size: 99649059
+      md5: ed8d2766ef61788addffb67dc0ce482f.dir
+      size: 124225139
       nfiles: 24
     - path: training/src/train_model.py
       hash: md5
@@ -41,6 +41,6 @@ stages:
     outs:
     - path: models/regression
       hash: md5
-      md5: 4cd113e863e4f89227c6a1969d91980d.dir
+      md5: 4cc6a7a462ba37c4d4d44c24719ec06a.dir
       size: 9831231
       nfiles: 1
