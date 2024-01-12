@@ -10,6 +10,9 @@ jobs:
   test_model:
     name: Probar modelo y aplicación en local
     runs-on: ubuntu-latest
+    outputs:
+      model: ${{ steps.export_vars.outputs.model_name }}
+      version: ${{ steps.export_vars.outputs.model_version }}
     steps:
       - name: Checkout sobre el proyecto en GitHub 
         id: checkout
@@ -31,11 +34,16 @@ jobs:
           dvc remote modify origin --local password ${{ secrets.DAGSHUB_TOKEN }}
           dvc pull -r origin process_data train_model
 
+      - name: Exportar información del modelo
+        id: export_vars
+        run: |
+          python training/src/get_variables.py
+          echo "model_name: ${{ env.MODEL_NAME }}"
+          echo "model_version: ${{ env.MODEL_VERSION }}"
+
       - name: Probar modelo ML automáticamente
         run: |
           pytest training/tests
-          echo "MODEL_NAME: $MODEL_NAME"
-          echo "MODEL_VERSION: $MODEL_VERSION"
 
       - name: Desplegar la aplicación localmente y correr pruebas sobre ella
         run: |
@@ -58,10 +66,10 @@ jobs:
           secure: true
           username: ${{ secrets.EMAIL_USERNAME }}
           password: ${{ secrets.EMAIL_PASSWORD }}
-          subject: 'Hubo un fallo en el modelo: ${{needs.test_model.outputs.MODEL_NAME}}'
+          subject: 'Hubo un fallo en el modelo: ${{needs.test_model.outputs.model}}'
           to: juferoto@hotmail.com
           from: jcorreosjave@gmail.com
           body: |
-            La prueba ha fallado para el modelo ${{ env.MODEL_NAME }} que se encuentra en producción
-            número ${{ env.MODEL_VERSION }}.
-            Revisa la información de ese modelo en MLFLOw.
+            La prueba ha fallado para el modelo ${{needs.test_model.outputs.model}} número ${{needs.test_model.outputs.version}}
+            que se encuentra en producción.
+            Revisa la información de ese modelo en MLFlow.
