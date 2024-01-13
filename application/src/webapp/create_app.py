@@ -45,11 +45,9 @@ def write_predictions(data: object):
             except Exception as e:
                 st.error(f"Error: {str(e)}")
 
-
 def main():
     data = get_inputs()
     write_predictions(data)
-
 
 if __name__ == "__main__":
     main()

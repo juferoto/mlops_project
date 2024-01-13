@@ -33,20 +33,13 @@ jobs:
       - name: Instalar paquetes necesarios
         run: pip install -r requirements.txt
 
-      - name: Se obtienen los datos y se validan
-        run: |
-          dvc remote modify origin --local auth basic
-          dvc remote modify origin --local user ${{ secrets.DAGSHUB_USERNAME }}
-          dvc remote modify origin --local password ${{ secrets.DAGSHUB_TOKEN }}
-          dvc pull -r origin train_model
-
       - name: Autenticacion con servidor Cloud (Google)
         uses: google-github-actions/auth@v2
         with:
           project_id: ${{ env.PROJECT_ID }}
           credentials_json: ${{ secrets.GCP_CREDENTIALS }}
 
-      - name: Autenticacion con el Artifact Registry
+      - name: Autenticación con el Artifact Registry
         id: docker-auth
         uses: 'docker/login-action@v3'
         with:

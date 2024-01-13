@@ -2,3 +2,5 @@
     remote = origin
 ['remote "origin"']
     url = https://dagshub.com/juferoto/mlops_project.dvc
+['remote "gs-store"']
+    url = gs://data-project-mlops

@@ -1,11 +1,23 @@
-import joblib
+import os
+import mlflow
 import numpy as np
 from hydra import compose, initialize
-from hydra.utils import to_absolute_path as abspath
 from omegaconf import DictConfig
 from sklearn.metrics import accuracy_score, precision_score, recall_score
 
 """ Aqui se agregan todas las funciones necesarias para realizar pruebas sobre un modelo ML """
+def get_model(config: DictConfig):
+    # Se agrega la direccion en donde esta alojado MLFlow sea remoto o local
+    mlflow.set_tracking_uri(config.mlflow.tracking_ui)
+    os.environ['MLFLOW_TRACKING_USERNAME'] = config.mlflow.username
+    os.environ['MLFLOW_TRACKING_PASSWORD'] = config.mlflow.password
+
+    # Obtiene el modelo que fue asignado al entorno de Produccion
+    stage = "Production"
+    model_uri=f"models:/{config.model.name}/{stage}"
+    model = mlflow.pyfunc.load_model(model_uri)
+    return model
+
 def load_data(path: DictConfig):
     x_train = np.load(path.x_train.path)
     x_test = np.load(path.x_test.path)
@@ -23,7 +35,7 @@ def test_logistic_regression():
     x_test = x_test.reshape(-1, x_test.shape[2])
 
     # Se obtiene el modelo entrenado
-    model = joblib.load(config.model.path)
+    model = get_model(config)
 
     # Obtener prediccion
     prediction = model.predict(x_test)
@@ -34,4 +46,4 @@ def test_logistic_regression():
     recall = recall_score(y_test.ravel(), prediction)
 
     # Realizar aserciones sobre los resultados
-    assert accuracy >= 0.7 and precision >= 0.7 and recall >= 0.7
+    assert accuracy >= config.global_metric and precision >= config.global_metric and recall >= config.global_metric
