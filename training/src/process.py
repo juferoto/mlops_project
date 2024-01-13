@@ -1,4 +1,3 @@
-import os
 import hydra
 import numpy as np
 from omegaconf import DictConfig

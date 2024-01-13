@@ -37,7 +37,7 @@ jobs:
       - name: Exportar información del modelo
         id: export_vars
         run: |
-          python training/src/get_variables.py
+          python training/tests/get_variables.py
           echo "model_name: ${{ env.MODEL_NAME }}"
           echo "model_version: ${{ env.MODEL_VERSION }}"
 
