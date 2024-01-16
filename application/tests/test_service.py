@@ -10,10 +10,11 @@ def test_create_service():
 
     image = Image.open(image_path)
     img_byte_array = BytesIO()
-    image.save(img_byte_array, format="PNG")
+    image_format = image_path.split("/")[1]
+    image.save(img_byte_array, format=image_format)
     img_byte_array = img_byte_array.getvalue()
 
     response = requests.post(API_URL, files={"file": img_byte_array})
     prediction = response.json()
 
-    assert prediction[0] in ["0", "1"]
+    assert prediction[0] in [0, 1]

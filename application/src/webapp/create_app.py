@@ -27,17 +27,18 @@ def write_predictions(data: object):
         if st.button("Validar"):
 
             try:
-                # Preprocesar los datos recibidos
+                # Obtiene la imagen a validar
                 img_byte_array = BytesIO()
-                image.save(img_byte_array, format="PNG")
+                image_format = data.type.split("/")[1]
+                image.save(img_byte_array, format=image_format)
                 img_byte_array = img_byte_array.getvalue()
 
-                # Enviar la informacion al API
+                # Envia la información a la API
                 response = requests.post(API_URL, files={"file": img_byte_array})
                 result = response.json()
 
                 # Mostrar el resultado
-                if result['prediction'][0] == "0":
+                if result['prediction'][0] == 0:
                     st.write("Esta imagen no tiene plaga.")
                 else:
                     st.write("Esta imagen tiene plaga.")
