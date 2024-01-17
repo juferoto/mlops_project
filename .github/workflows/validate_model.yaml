@@ -8,7 +8,7 @@ on:
       - .github/workflows/validate_model.yaml
 jobs:
   test_model:
-    name: Cargar información del proyecto
+    name: Probar modelo y aplicación en local
     runs-on: ubuntu-latest
     outputs:
       model: ${{ steps.export_vars.outputs.model_name }}
@@ -46,25 +46,26 @@ jobs:
       - name: Probar modelo ML
         id: validate_model
         run: |
-          export test_ml = $(pytest training/tests)
-          echo "result_model: $test_ml"
+          pytest training/tests
+          echo "result_model: ${{ env.RESULT_MODEL }}"
 
       - name: Desplegar la aplicación localmente y correr pruebas sobre ella
         id: validate_app
         run: |
           python application/src/create_service.py & 
           sleep 10
-          export test_app = $(pytest application/tests)
-          echo "result_app: $test_app"
+          pytest application/tests
+          echo "result_app: ${{ env.RESULT_APP }}"
           kill -9 `lsof -i:3000 -t`
   notify:
     name: Enviar correo en caso de falla
     needs: test_model
     runs-on: ubuntu-latest
-    if: ${{ needs.test_model.outputs.validate_model == 'failed' || needs.test_model.outputs.validate_app == 'failed' }}
+    if: failure()
     steps:
       - name: Genera y envía el correo de la falla
         uses: dawidd6/action-send-mail@v3
+        if: ${{needs.test_model.outputs.validate_model == 'False' || needs.test_model.outputs.validate_app == 'False'}}
         with:
           server_address: smtp.gmail.com
           server_port: 465

@@ -24,6 +24,10 @@ def load_data(path: DictConfig):
     y_test = np.load(path.y_test.path)
     return x_train, x_test, y_test
 
+def set_output(name, value):
+    with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
+        print(f'{name}={value}', file=fh)
+
 def test_logistic_regression():
 
     with initialize(version_base=None, config_path="../../config"):
@@ -45,5 +49,13 @@ def test_logistic_regression():
     precision = precision_score(y_test.ravel(), prediction)
     recall = recall_score(y_test.ravel(), prediction)
 
-    # Realizar aserciones sobre los resultados
-    assert accuracy >= config.global_metric and precision >= config.global_metric and recall >= config.global_metric
+    condition = accuracy >= config.global_metric and precision >= config.global_metric and recall >= config.global_metric
+
+    # Realiza aserciones sobre los resultados
+    try:
+        assert condition
+    finally:
+        env_file = os.getenv('GITHUB_OUTPUT')
+        if env_file is not None:
+            # Escribe las variables a exportar
+            set_output("RESULT_MODEL", condition)
