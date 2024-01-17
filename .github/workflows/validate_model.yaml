@@ -1,0 +1,80 @@
+name: Prueba para validar modelo y aplicación en local
+on:
+  pull_request:
+    paths:
+      - config/**
+      - training/**
+      - application/**
+      - .github/workflows/validate_model.yaml
+jobs:
+  test_model:
+    name: Cargar información del proyecto
+    runs-on: ubuntu-latest
+    outputs:
+      model: ${{ steps.export_vars.outputs.model_name }}
+      version: ${{ steps.export_vars.outputs.model_version }}
+      validate_model: ${{ steps.validate_model.outputs.result_model }}
+      validate_app: ${{ steps.validate_app.outputs.result_app }}
+    steps:
+      - name: Checkout sobre el proyecto en GitHub 
+        id: checkout
+        uses: actions/checkout@v3
+
+      - name: Configuración del ambiente
+        uses: actions/setup-python@v3
+        with:
+          python-version: 3.11
+          cache: pip
+        
+      - name: Instalar paquetes necesarios
+        run: pip install -r requirements.txt
+
+      - name: Obtener datos y modelo ya entrenado
+        run: |
+          dvc remote modify origin --local auth basic
+          dvc remote modify origin --local user ${{ secrets.DAGSHUB_USERNAME }}
+          dvc remote modify origin --local password ${{ secrets.DAGSHUB_TOKEN }}
+          dvc pull -r origin process_data train_model
+
+      - name: Exportar información del modelo
+        id: export_vars
+        run: |
+          python training/tests/get_variables.py
+          echo "model_name: ${{ env.MODEL_NAME }}"
+          echo "model_version: ${{ env.MODEL_VERSION }}"
+
+      - name: Probar modelo ML
+        id: validate_model
+        run: |
+          export test_ml = $(pytest training/tests)
+          echo "result_model: $test_ml"
+
+      - name: Desplegar la aplicación localmente y correr pruebas sobre ella
+        id: validate_app
+        run: |
+          python application/src/create_service.py & 
+          sleep 10
+          export test_app = $(pytest application/tests)
+          echo "result_app: $test_app"
+          kill -9 `lsof -i:3000 -t`
+  notify:
+    name: Enviar correo en caso de falla
+    needs: test_model
+    runs-on: ubuntu-latest
+    if: ${{ needs.test_model.outputs.validate_model == 'failed' || needs.test_model.outputs.validate_app == 'failed' }}
+    steps:
+      - name: Genera y envía el correo de la falla
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          secure: true
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: 'Hubo un fallo en el modelo: ${{needs.test_model.outputs.model}}'
+          to: juferoto@hotmail.com
+          from: jcorreosjave@gmail.com
+          body: |
+            La prueba ha fallado para el modelo ${{needs.test_model.outputs.model}} número ${{needs.test_model.outputs.version}}
+            que se encuentra en producción. Revisa la información de ese modelo en MLFlow y/o si la aplicación asociada a ese modelo
+            esta funcionando apropiadamente.
