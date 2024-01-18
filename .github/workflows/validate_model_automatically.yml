@@ -1,7 +1,7 @@
 name: Prueba para validar modelo y aplicación automaticamente
 on:
   schedule:
-    - cron: "*/5 * * * *"
+    - cron: "* 4 * * *"
 jobs:
   test_model:
     name: Probar modelo y aplicación
