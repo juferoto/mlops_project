@@ -1,4 +1,4 @@
-name: Desplegar API y aplicación
+name: Prueba para desplegar API y aplicación
 on:
   push:
     branches:
@@ -7,7 +7,7 @@ on:
       - config/**
       - training/**
       - application/**
-      - .github/workflows/deploy_app.yaml
+      - .github/workflows/validate_deploy_app.yaml
 jobs:
   deploy_app:
     name: Desplegar API y aplicación
