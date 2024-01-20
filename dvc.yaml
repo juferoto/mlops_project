@@ -17,3 +17,10 @@ stages:
     outs:
     - models/regression:
         persist: true
+  evaluate_model:
+    cmd: python training/src/evaluate_model.py
+    deps:
+    - config/main.yaml
+    - data/processed
+    - models/regression
+    - training/src/evaluate_model.py
