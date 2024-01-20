@@ -23,6 +23,7 @@ class ImageTransformation:
                 rgb_im = input_image.convert("RGB")
                 output_image = remove(rgb_im)
                 output_image.save(output_path)
+                os.remove(img_path)
 
     def image_normalize(self):
         data_sin_plagas = []
