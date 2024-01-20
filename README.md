@@ -28,7 +28,7 @@ El segundo flujo de trabajo [validate_model_automatically.yaml](https://dagshub.
 
 ![](https://i.ibb.co/hgK6wm8/flujo-Validacion-Automatica.png)
 
-## Usar GitHub Actions para probar desplegar el modelo después de mezclar
+## Usar GitHub Actions para desplegar el modelo después de mezclar
 El tercer flujo de trabajo [validate_deploy_app.yaml](https://dagshub.com/juferoto/mlops_project/src/master/.github/workflows/validate_deploy_app.yaml) automáticamente despliega un nuevo modelo al servicio existente después de que el pull request es mezclado o se realiza un push a la rama principal (master).
 
 ![](https://i.ibb.co/QfMDbLr/flujo-Despliega-App.png)

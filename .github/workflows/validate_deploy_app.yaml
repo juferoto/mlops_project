@@ -1,4 +1,4 @@
-name: Prueba para desplegar API y aplicación
+name: Desplegar API y aplicación en remoto
 on:
   push:
     branches:
