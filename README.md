@@ -11,7 +11,7 @@ Este proyecto demuestra el uso de DagsHub, MLFlow y GitHub Actions para:
 
 ![](https://i.ibb.co/jTspJCk/flujo-Ml-Ops.png)
 
-Este es el resumen del flujo de trabajo:
+# Este es el resumen del flujo de trabajo:
 
 ## Experimentación con DagsHub y MLFlow
 Después de probar diferentes parámetros usando [DagsHub](https://towardsdatascience.com/dagshub-a-github-supplement-for-data-scientists-and-ml-engineers-9ecaf49cc505) y [MLFlow](https://mlflow.org/docs/latest/python_api/index.html), se seleccionan una combinación de parámetros que nos dé un mejor desempeño que el modelo existente en producción, y se envía el codigo por Git.
