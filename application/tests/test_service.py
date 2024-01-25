@@ -19,8 +19,8 @@ def test_create_service():
     img_byte_array = img_byte_array.getvalue()
 
     response = requests.post(API_URL, files={"file": img_byte_array})
-    prediction = response.json()
-    condition = prediction[0] in [0, 1]
+    result = response.json()
+    condition = result['prediction'][0] in [0, 1]
 
     try:
         assert condition
