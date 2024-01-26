@@ -27,5 +27,4 @@ def test_create_service():
     finally:
         env_file = os.getenv('GITHUB_OUTPUT')
         if env_file is not None:
-            # Escribe las variables a exportar
             set_output("RESULT_APP", condition)

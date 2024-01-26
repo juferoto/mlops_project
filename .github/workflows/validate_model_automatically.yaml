@@ -1,4 +1,4 @@
-name: Validar modelo y aplicación automaticamente
+name: Validar modelo y aplicación automáticamente
 on:
   schedule:
     - cron: "* 4 * * *"
