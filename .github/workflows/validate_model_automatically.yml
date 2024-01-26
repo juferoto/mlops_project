@@ -48,11 +48,11 @@ jobs:
       - name: Desplegar la aplicación localmente y correr pruebas sobre ella
         id: validate_app
         run: |
-          python application/src/create_service.py & 
-          sleep 10
+          python application/src/main.py & 
+          sleep 20
           pytest application/tests
           echo "result_app: ${{ env.RESULT_APP }}"
-          kill -9 `lsof -i:3000 -t`
+          kill -9 `lsof -t -i :8000`
   notify:
     name: Enviar correo en caso de falla
     needs: test_model

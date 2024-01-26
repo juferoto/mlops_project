@@ -6,7 +6,7 @@ raw:
   path: data/raw
   types: [sin_plaga, plaga]
 
-global_metric: 0.8
+global_metric: 0.7
 
 model:
   dir: models/regression
