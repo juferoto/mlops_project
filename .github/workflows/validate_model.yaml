@@ -1,4 +1,4 @@
-name: Validar modelo y aplicación en local
+name: Validar modelo y aplicación por PR
 on:
   pull_request:
     paths:
