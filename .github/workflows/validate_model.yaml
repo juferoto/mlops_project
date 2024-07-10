@@ -8,7 +8,7 @@ on:
       - .github/workflows/validate_model.yaml
 jobs:
   test_model:
-    name: Probar modelo y aplicación en entorno propio
+    name: Probar modelo y aplicación en local
     runs-on: ubuntu-latest
     outputs:
       model: ${{ steps.export_vars.outputs.model_name }}
