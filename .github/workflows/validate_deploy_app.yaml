@@ -7,7 +7,7 @@ on:
       - config/**
       - training/**
       - application/**
-      - .github/workflows/validate_deploy_app.yaml
+      - .github/workflows/*.yaml
 jobs:
   deploy_app:
     name: Desplegar API y aplicación
