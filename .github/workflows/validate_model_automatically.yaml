@@ -73,5 +73,5 @@ jobs:
           from: jcorreosjave@gmail.com
           body: |
             La prueba ha fallado para el modelo ${{needs.test_model.outputs.model}} número ${{needs.test_model.outputs.version}}
-            que se encuentra en producción. Revisa la información de ese modelo en MLFlow y/o si la aplicación asociada a ese modelo
+            que se encuentra en producción. Revisa la información de ese modelo en MLFlow o si la aplicación asociada a ese modelo
             esta funcionando apropiadamente.

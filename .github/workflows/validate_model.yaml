@@ -8,7 +8,7 @@ on:
       - .github/workflows/validate_model.yaml
 jobs:
   test_model:
-    name: Probar modelo y aplicación en local
+    name: Probar modelo y aplicación en entorno propio
     runs-on: ubuntu-latest
     outputs:
       model: ${{ steps.export_vars.outputs.model_name }}
@@ -77,5 +77,5 @@ jobs:
           from: jcorreosjave@gmail.com
           body: |
             La prueba ha fallado para el modelo ${{needs.test_model.outputs.model}} número ${{needs.test_model.outputs.version}}
-            que se encuentra en producción. Revisa la información de ese modelo en MLFlow y/o si la aplicación asociada a ese modelo
+            que se encuentra en producción. Revisa la información de ese modelo en MLFlow o si la aplicación asociada a ese modelo
             esta funcionando apropiadamente.
