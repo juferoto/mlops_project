@@ -1,4 +1,4 @@
-name: Validar modelo y aplicación en local
+name: Validar modelo y aplicación por PR
 on:
   pull_request:
     paths:
@@ -8,7 +8,7 @@ on:
       - .github/workflows/validate_model.yaml
 jobs:
   test_model:
-    name: Probar modelo y aplicación en local
+    name: Probar modelo y aplicación en entorno propio
     runs-on: ubuntu-latest
     outputs:
       model: ${{ steps.export_vars.outputs.model_name }}
