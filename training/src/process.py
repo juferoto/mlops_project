@@ -19,7 +19,7 @@ def process_data(config: DictConfig):
     image_normalizer = ImageTransformation(input_dir, categories)
 
     # Se remueve el fondo de las imagenes
-    # image_normalizer.remove_background(config.processed.dir)
+    image_normalizer.remove_background(config.processed.dir)
 
     # Se realiza la transformacion de las imagenes a arreglos de NumPy y se guardan
     data_sin_plagas, labels_sin_plagas, data_plagas, labels_plagas = image_normalizer.image_normalize()

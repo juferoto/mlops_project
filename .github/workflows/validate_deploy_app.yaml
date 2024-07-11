@@ -13,25 +13,16 @@ jobs:
     name: Desplegar API y aplicación
     runs-on: ubuntu-latest
     env:
-      PROJECT_ID: dataavocado # TODO: actualizar con project id de Google Cloud update Google Cloud project id
-      GAR_LOCATION: us-central1 # TODO: actualizar la localizacion del Artifact Registry
-      REPOSITORY: registrydocker # TODO: actualizar con el nombre del repositorio del Artifact Registry
-      SERVICE: api-plague-predict # TODO: actualizar con el nombre del servicio de Cloud Run
-      REGION: us-central1 # TODO: actualizar con nombre de la region del servicio de Cloud Run
-      IMAGE_NAME: web-plague-predict # TODO: actualizar con el nombre del servicio de Cloud Run
+      PROJECT_ID: dataavocado
+      GAR_LOCATION: us-central1
+      REPOSITORY: registrydocker
+      SERVICE: api-plague-predict
+      REGION: us-central1
+      IMAGE_NAME: web-plague-predict
     steps:
       - name: Checkout sobre el proyecto en GitHub
         id: checkout
         uses: actions/checkout@v3
-
-      - name: Configuración del ambiente
-        uses: actions/setup-python@v3
-        with:
-          python-version: 3.11
-          cache: pip
-
-      - name: Instalar paquetes necesarios
-        run: pip install -r requirements.txt
 
       - name: Autenticacion con servidor Cloud (Google)
         uses: google-github-actions/auth@v2

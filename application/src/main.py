@@ -5,6 +5,7 @@ from fastapi.responses import JSONResponse
 from hydra import compose, initialize
 import numpy as np
 from PIL import Image
+from rembg import remove
 import mlflow
 import uvicorn
 
@@ -31,9 +32,12 @@ async def predict(file: UploadFile = File(...)):
         content = await file.read()
         image = Image.open(io.BytesIO(content)).convert('RGB')
 
+        # Remover fondo
+        output_image = remove(image).convert('RGB')
+
         # Preprocesar datos
         dimensions = (640, 640)
-        scaled_image = image.resize(dimensions)
+        scaled_image = output_image.resize(dimensions)
         data = np.asarray(scaled_image)
         data = data.reshape((1, 640*640*3))
 
