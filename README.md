@@ -24,7 +24,7 @@ El primer flujo de trabajo [validate_model.yaml](https://dagshub.com/juferoto/ml
 ![](images/flujoPruebaCodigo.png)
 
 ## Usar GitHub Actions que lanza tarea automática para probar el modelo y aplicación
-El segundo flujo de trabajo [validate_model_automatically.yaml](https://dagshub.com/juferoto/mlops_project/src/master/.github/workflows/validate_model_automatically.yml) cada día automáticamente a las 4 a.m. realiza una validación al modelo y la aplicación. En caso de falla se envía una notificación vía correo electrónico al científico de datos designado para el proyecto valide porque el modelo no fue desplegado correctamente.
+El segundo flujo de trabajo [validate_model_automatically.yaml](https://dagshub.com/juferoto/mlops_project/src/master/.github/workflows/validate_model_automatically.yml) cada día automáticamente a las 11 p.m. realiza una validación al modelo y la aplicación, de lo consolidado en la rama principal (master). En caso de falla se envía una notificación vía correo electrónico al científico de datos designado para el proyecto valide porque el modelo no fue desplegado correctamente.
 
 ![](images/flujoPruebaCodigoAutomatica.png)
 
