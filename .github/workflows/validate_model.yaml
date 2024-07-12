@@ -5,7 +5,7 @@ on:
       - config/**
       - training/**
       - application/**
-      - .github/workflows/validate_model.yaml
+      - .github/workflows/*.yaml
 jobs:
   test_model:
     name: Probar modelo y aplicación en entorno propio
