@@ -13,7 +13,7 @@ class ImageTransformation:
         self.categories = categories
 
     def remove_background(self, output_dir):
-        for category_idx, category in enumerate(self.categories):
+        for category in self.categories:
             for file in os.listdir(os.path.join(self.input_dir, category)):
                 output_path = os.path.join(output_dir,
                                            category,
@@ -23,7 +23,6 @@ class ImageTransformation:
                 rgb_im = input_image.convert("RGB")
                 output_image = remove(rgb_im)
                 output_image.save(output_path)
-                os.remove(img_path)
 
     def image_normalize(self):
         data_sin_plagas = []

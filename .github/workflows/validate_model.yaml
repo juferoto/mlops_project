@@ -53,10 +53,10 @@ jobs:
         id: validate_app
         run: |
           python application/src/main.py & 
-          sleep 20
+          sleep 60
           pytest application/tests
-          echo "result_app: ${{ env.RESULT_APP }}"
           kill -9 `lsof -t -i :8000`
+          echo "result_app: ${{ env.RESULT_APP }}"
   notify:
     name: Enviar correo en caso de falla
     needs: test_model
