@@ -102,7 +102,7 @@ Por el contrario, si tienes cambios en los datos se ejecuta el siguiente comando
 - Ver el estado de los datos nuevos o cambiados
     `dvc data status`
 
-- Ver la version de dvc y sus dependencias
+- Ver la versión de dvc y sus dependencias
     `dvc doctor`
 
 - Configurar la ubicación de los datos en GCP
