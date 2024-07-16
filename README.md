@@ -58,43 +58,61 @@ El tercer flujo de trabajo [validate_deploy_app.yaml](https://dagshub.com/jufero
 Si no hay cambio en los datos se usa el siguiente comando:
 `python training\src\main.py`
 
-Por el contrario, si tienes cambios en los datos se ejecuta el siguiente comando de DVC para generar el modelo, y el flujo de datos:
+Por el contrario, si tienes cambios en los datos se ejecuta el siguiente comando de DVC para generar el modelo, y el flujo de datos (sin la necesidad de agregar los datos cambiados):
 `dvc repro`
 
 # Comandos básicos de DVC
 
-## Iniciar un proyecto en DVC
-`dvc init`
+- Iniciar un proyecto en DVC
+    `dvc init`
 
-## Colocar una rama por defecto para indicar en donde se almacenan los datos
-`dvc remote default origin`
+- Colocar una rama por defecto para indicar en donde se almacenan los datos
+    `dvc remote default origin`
 
-## Mirar el estado de los datos tanto en local como en remoto
-`dvc status --cloud`
+- Mirar el estado de los datos tanto en local como en remoto
+    `dvc status --cloud`
 
-## Validar los estados a realizar sobre los datos
-`dvc dag`
+- Validar los estados a realizar sobre los datos
+    `dvc dag`
 
-## Para hacer un commit de los cambios
-`dvc commit -m ""`
+- Para hacer un commit de los cambios
+    `dvc commit -m ""`
 
-## Agregar todas los archivos cambiados
-`dvc add .`
+- Agregar todas los archivos cambiados
+    `dvc add .`
 
-## Agregar una carpeta para ser agregada a los cambios
-`dvc add <folder_name>`
+- Agregar una carpeta a los cambios
+    `dvc add <folder_name>`
 
-## Realizar la actualización en la rama remota
-`dvc push`
+- Realizar la actualización en la rama remota
+    `dvc push`
 
-## Obtener los datos de la rama remota
-`dvc pull`
+- Obtener los datos de la rama remota
+    `dvc pull`
 
-## Quitar o remover una carpeta inspeccionada
-`dvc remove <folder_name>`
+- Quitar o remover una carpeta inspeccionada
+    `dvc remove <folder_name>`
 
-## Borrar toda la configuración realizada en un proyecto con DVC
-`dvc destroy`
+- Borrar toda la configuración realizada en un proyecto con DVC
+    `dvc destroy`
+
+- Ver la salida de los stages creados por dvc
+    `dvc stage list`
+
+- Ver el estado de los datos nuevos o cambiados
+    `dvc data status`
+
+- Ver la version de dvc y sus dependencias
+    `dvc doctor`
+
+- Configurar la ubicación de los datos en GCP
+    `dvc remote add gs-store gs://data-project-mlops`
+
+- Ver la ubicación de los datos en GCP
+    `dvc remote list`
+
+- Realizar la actualización en una rama específica
+    `dvc push -r gs-store`
 
 ## Documentación de DVC
 https://dvc.org/doc/command-reference
