@@ -33,3 +33,69 @@ El tercer flujo de trabajo [validate_deploy_app.yaml](https://dagshub.com/jufero
 
 ![](images/flujoDespliegaApp.png)
 
+# Estructura de carpetas del proyecto
+
+- **.github:**
+    - **workflows:** Almacén de los archivos de extensión Yaml, que realizan las tareas automatizadas.
+- **application:** 
+    - **src:** Códigos de la API con FastAPI.
+        - **webapp:** Códigos de la Aplicación con Streamlit.
+- **config:** Archivos de configuración.
+- **data:** Almacén de datos (**raw** - datos sin procesar, **processed** - datos procesados)
+- **models:** Almacén de modelos ya entrenados.
+- **notebooks:** Almacén de notebooks para analizar visualmente los resultados.
+- **outputs:** Guarda las configuraciones que se tuvieron por cada ejecución de un modelo.
+- **training:**
+    - **src:** Códigos de Python para el desarrollo del modelo.
+    - **test:** Códigos de prueba para el modelo.  
+
+![](images/estructuraProyecto.png)
+
+# Comandos básicos para crear un modelo
+
+## Para crear un modelo debes ubicarte en la carpeta raiz del proyecto y ejecutar el comando
+
+Si no hay cambio en los datos se usa el siguiente comando:
+`python training\src\main.py`
+
+Por el contrario, si tienes cambios en los datos se ejecuta el siguiente comando de DVC para generar el modelo, y el flujo de datos:
+`dvc repro`
+
+# Comandos básicos de DVC
+
+## Iniciar un proyecto en DVC
+`dvc init`
+
+## Colocar una rama por defecto para indicar en donde se almacenan los datos
+`dvc remote default origin`
+
+## Mirar el estado de los datos tanto en local como en remoto
+`dvc status --cloud`
+
+## Validar los estados a realizar sobre los datos
+`dvc dag`
+
+## Para hacer un commit de los cambios
+`dvc commit -m ""`
+
+## Agregar todas los archivos cambiados
+`dvc add .`
+
+## Agregar una carpeta para ser agregada a los cambios
+`dvc add <folder_name>`
+
+## Realizar la actualización en la rama remota
+`dvc push`
+
+## Obtener los datos de la rama remota
+`dvc pull`
+
+## Quitar o remover una carpeta inspeccionada
+`dvc remove <folder_name>`
+
+## Borrar toda la configuración realizada en un proyecto con DVC
+`dvc destroy`
+
+## Documentación de DVC
+https://dvc.org/doc/command-reference
+

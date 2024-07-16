@@ -4,3 +4,5 @@ mlruns/
 /data/processsed
 /data/raw
 /models/regression
+params.yml
+metrics.csv

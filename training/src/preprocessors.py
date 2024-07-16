@@ -14,9 +14,12 @@ class ImageTransformation:
 
     def remove_background(self, output_dir):
         for category in self.categories:
+            output_category_path = os.path.join(output_dir, category + "_processed")
+            if not os.path.exists(output_category_path):
+                os.makedirs(output_category_path)
             for file in os.listdir(os.path.join(self.input_dir, category)):
                 output_path = os.path.join(output_dir,
-                                           category,
+                                           category + "_processed",
                                            file[:-4] + ".png")
                 img_path = os.path.join(self.input_dir, category, file)
                 input_image = Image.open(img_path)
@@ -31,8 +34,8 @@ class ImageTransformation:
         labels_plagas = []
 
         for category_idx, category in enumerate(self.categories):
-            for file in os.listdir(os.path.join(self.input_dir, category)):
-                img_path = os.path.join(self.input_dir, category, file)
+            for file in os.listdir(os.path.join(self.input_dir, category + "_processed")):
+                img_path = os.path.join(self.input_dir, category + "_processed", file)
 
                 img = cv2.imread(img_path)
                 image_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
