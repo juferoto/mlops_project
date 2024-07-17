@@ -20,7 +20,7 @@ def train(config: DictConfig):
     # Se obtiene el modelo a usar
     model = LogisticRegression()
 
-    # Se realiza la normalizacion de las imagenes
+    # Se realiza la normalización de las imagenes
     x_train, x_test, y_train, y_test = load_data(config.processed)
 
     x_train = x_train.reshape(-1, x_train.shape[2])
