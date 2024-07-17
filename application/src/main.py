@@ -4,7 +4,6 @@ from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.responses import JSONResponse
 from hydra import compose, initialize
 import numpy as np
-from PIL import Image
 from rembg import remove
 import mlflow
 import uvicorn
@@ -30,10 +29,9 @@ async def predict(file: UploadFile = File(...)):
     try:
         # Cargar contenido requerido
         content = await file.read()
-        image = Image.open(io.BytesIO(content)).convert('RGB')
 
         # Remover fondo
-        output_image = remove(image).convert('RGB')
+        output_image = remove(io.BytesIO(content)).convert('RGB')
 
         # Preprocesar datos
         dimensions = (640, 640)
