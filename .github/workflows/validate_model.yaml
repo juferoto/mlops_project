@@ -6,6 +6,7 @@ on:
       - training/**
       - application/**
       - .github/workflows/*.yaml
+      - dvc.lock
 jobs:
   test_model:
     name: Probar modelo y aplicación en entorno propio
