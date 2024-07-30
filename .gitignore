@@ -6,3 +6,5 @@ mlruns/
 /models/regression
 params.yml
 metrics.csv
+/notebooks/runs
+/notebooks/*.pt
