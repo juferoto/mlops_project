@@ -1,0 +1,8 @@
+path: D:/proyectoGrado/mlops_project/data/raw/dataYolo
+train: images/train
+val: images/validation
+test: images/test
+
+# Classes
+names:
+  0: plaga
